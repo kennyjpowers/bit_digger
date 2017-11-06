@@ -8,14 +8,14 @@ from sqlalchemy_utils import UUIDType
 import uuid
 import os
 
-
-sql_string = "mysql://%s:%s@%s:%s/%s" % (os.environ['BIT_DIGGER_SQL_USERNAME'],
-                                                   os.environ['BIT_DIGGER_SQL_PASSWORD'],
-                                                   os.environ['BIT_DIGGER_SQL_HOSTNAME'],
-                                                   os.environ['BIT_DIGGER_SQL_PORT'],
-                                                   os.environ['BIT_DIGGER_SQL_DB_NAME'])
-
-print sql_string
+if os.environ['BIT_DIGGER_ENV'] == 'test':
+    sql_string = 'sqlite:///:memory:'
+else:
+    sql_string = "mysql://%s:%s@%s:%s/%s" % (os.environ['BIT_DIGGER_SQL_USERNAME'],
+                                             os.environ['BIT_DIGGER_SQL_PASSWORD'],
+                                             os.environ['BIT_DIGGER_SQL_HOSTNAME'],
+                                             os.environ['BIT_DIGGER_SQL_PORT'],
+                                             os.environ['BIT_DIGGER_SQL_DB_NAME']) 
 
 engine = create_engine(sql_string)
 sess_maker = sessionmaker(bind=engine)
@@ -64,7 +64,7 @@ class Trade(Base):
     timestamp = Column(BigInteger)
     datetime = Column(String(50))
 
-    __table_args__ = (sqlalchemy.schema.Index('idx_market_exhange_timestamp', "exchange", "market", "timestamp"), )
+    #__table_args__ = (sqlalchemy.schema.Index('idx_market_exhange_timestamp', "exchange", "market", "timestamp"), )
         
 
     def __repr__(self):
