@@ -17,8 +17,10 @@ pip install sqlalchemy sqlalchemy_utils ccxt
 Necessary Environment Variables
 + BIT_DIGGER_EXCHANGE 
 + BIT_DIGGER_RESOURCE 
-+ BIT_DIGGER_ENV 
-If BIT_DIGGER_ENV is production for following are necessary:
++ BIT_DIGGER_ENV
+
+If BIT_DIGGER_ENV is production the following are necessary:
+
 + BIT_DIGGER_SQL_USERNAME
 + BIT_DIGGER_SQL_PASSWORDN
 + BIT_DIGGER_SQL_HOSTNAME
