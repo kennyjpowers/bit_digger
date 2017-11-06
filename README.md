@@ -8,9 +8,9 @@
 
 ### Packages
 
-'''bash
+```bash
 pip install sqlalchemy sqlalchemy_utils ccxt
-'''
+```
 
 ### Environemnt Vars
 BIT_DIGGER_EXCHANGE (i.e. gdax)
