@@ -32,3 +32,9 @@ BIT_DIGGER_SQL_HOSTNAME
 BIT_DIGGER_SQL_PORT
 
 BIT_DIGGER_SQL_DB_NAME
+
+### Usage
+
+```bash
+python bit_digger.py
+```
