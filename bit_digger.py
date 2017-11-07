@@ -67,8 +67,8 @@ class OrderDigger(BaseDigger):
 
 #class TradeDigger(BaseDigger):
     
-miners = {}
-miners['orders'] = OrderDigger
+diggers = {}
+diggers['orders'] = OrderDigger
 #minder['trades'] = TradeDigger
 
 
@@ -81,7 +81,7 @@ class BitDigger(BaseDigger):
 
     def dig(self):
         print "digging for " + self.resource
-        if self.resource in miners.keys(): # if the resource is supported
+        if self.resource in diggers.keys(): # if the resource is supported
             miners[resource](self.exchange_string).dig() # execute miner function
         else:
             raise NotImplementedError(self._resource + " is not a supported resource.")
