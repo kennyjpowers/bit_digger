@@ -16,7 +16,8 @@ pip install sqlalchemy sqlalchemy_utils ccxt
 
 Necessary Environment Variables
 + BIT_DIGGER_EXCHANGE 
-+ BIT_DIGGER_RESOURCE 
++ BIT_DIGGER_RESOURCE
++ BID_DIGGER_FROM_TIMESTAMP (only used for candles currently)
 + BIT_DIGGER_ENV
 
 If BIT_DIGGER_ENV is production the following are necessary:
@@ -35,7 +36,7 @@ Either set the variables youself or you can edit the setup.sh appropriately
 export BIT_DIGGER_EXCHANGE=gdax
 
 # Resource
-# options: orders, trades
+# options: orders, trades, candles
 export BIT_DIGGER_RESOURCE=orders
 
 # Environment

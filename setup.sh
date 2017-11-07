@@ -1,14 +1,15 @@
 # Exchange
 # options: exchanges supported by ccxt
-export BIT_DIGGER_EXCHANGE=okcoinusd
+export BIT_DIGGER_EXCHANGE=gdax
 
 # Resource
 # options: orders, trades
-export BIT_DIGGER_RESOURCE=orders
+export BIT_DIGGER_RESOURCE=trades
+export BIT_DIGGER_FROM_TIMESTAMP=1510032840000
 
 # Environment
 # options: test, production
-export BIT_DIGGER_ENV=test
+export BIT_DIGGER_ENV=production
 
 # SQL Configuration
 # note: only used if environment is production

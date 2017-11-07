@@ -51,7 +51,7 @@ class BitDiggerTimestampedModelBase(BitDiggerModelBase):
 class OrderAndTradeBase(BitDiggerTimestampedModelBase):
     price = Column(Float)
     amount = Column(Float)
-    type = Column(Boolean) #1 = Ask, 0 = Bid
+    type = Column(String(15)) #1 = Ask, 0 = Bid
     exchange = Column(String(25))
     market = Column(String(25))
 
@@ -60,41 +60,69 @@ class OrderAndTradeBase(BitDiggerTimestampedModelBase):
         self.price = price
         self.amount = amount
         self.type = type
+        self.exchange = exchange
+        self.market = market
     
 class Order(Base, OrderAndTradeBase):
     __tablename__ = 'orders'
 
-    __table_args__ = (sqlalchemy.schema.Index('idx_market_exhange_timestamp', "exchange", "market", "timestamp"), )
+    __table_args__ = (sqlalchemy.schema.Index('idx_orders_market_exhange_timestamp', "exchange", "market", "timestamp"), )
 
     def __init__(self, price, amount, type, exchange, market, timestamp, datetime):
         OrderAndTradeBase.__init__(self, price, amount, type, exchange, market, timestamp, datetime)
 
     def __repr__(self):
-        type_string = "Ask" if type else "Bid"
-        return "<Order(price='%s', amount='%s', '%s', datetime='%s', exchange='%s', market='%s')>" % (self.price, self.amount, type_string, self.datetime, self.exchange, self.market)
+        return "<Order(price='%s', amount='%s', '%s', datetime='%s', exchange='%s', market='%s')>" % (self.price, self.amount, self.type, self.datetime, self.exchange, self.market)
 
 class Trade(OrderAndTradeBase, Base):
     __tablename__ = 'trades'
 
-    #__table_args__ = (sqlalchemy.schema.Index('idx_market_exhange_timestamp', "exchange", "market", "timestamp"), )
+    __table_args__ = (sqlalchemy.schema.Index('idx_trades_market_exhange_timestamp', "exchange", "market", "timestamp"), )
     
-    side = Column(Boolean)
+    side = Column(String(10))
 
-    def __init__(self, price, amount, limit, buy, exchange, market, timestamp, datetime):
+    def __init__(self, price, amount, type, side, exchange, market, timestamp, datetime):
         super(Trade, self).__init__(price,
                                     amount,
-                                    limit == 'limit', # order type is 'limit' if true, 'market' if false
+                                    type, 
                                     exchange,
                                     market,
                                     timestamp,
                                     datetime)
-        self.side = buy == 'buy'  #1 = buy, 0 = sell
+        self.side = side
         
 
     def __repr__(self):
-        type_string = "limit" if type else "market"
-        side_string = "buy" if side else "sell"
-        return "<Trade(price='%s', amount='%s', '%s', '%s', datetime='%s', exchange='%s', market='%s')>" % (self.price, self.amount, type_string, side_string, self.datetime, self.exchange, self.market)
+        return "<Trade(price='%s', amount='%s', '%s', '%s', datetime='%s', exchange='%s', market='%s')>" % (self.price, self.amount, self.type, self.side, self.datetime, self.exchange, self.market)
+
+class Candle(BitDiggerTimestampedModelBase, Base):
+    __tablename__ = 'candles'
+
+    exchange = Column(String(25))
+    market = Column(String(25))
+    open = Column(String(50))
+    highest = Column(String(50))
+    lowest = Column(String(50))
+    closing = Column(String(50))
+    volume = Column(String(50))
+
+    __table_args__ = (sqlalchemy.schema.Index('idx_candles_market_exhange_timestamp', "exchange", "market", "timestamp"), )
+
+
+
+    def __init__(self, exchange, market, timestamp, open, highest, lowest, closing, volume):
+        super(Candle, self).__init__(timestamp,
+                                     None)
+        self.exchange = exchange
+        self.market = market
+        self.open = open
+        self.highest = highest
+        self.lowest = lowest
+        self.closing = closing
+        self.volume = volume
+    
+    
+    
 
 ######################################################
 
