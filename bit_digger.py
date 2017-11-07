@@ -46,7 +46,7 @@ class OrderDigger(BaseDigger):
 
 
     def get_resources(self, market):
-        print "Digging for trades from %s" % market
+        print "Digging for orders from %s" % market
         orders = []
         book = self.get_order_book(market)
         timestamp = book['timestamp']
@@ -101,7 +101,7 @@ class BitDigger(BaseDigger):
         
 
     def dig(self):
-        print "Digging for " + self.resource
+        print "Digging for %s from %s" % (self.resource, self.exchange_string)
         if self.resource in diggers.keys(): # if the resource is supported
             diggers[resource](self.exchange_string).dig() # execute miner function
         else:
