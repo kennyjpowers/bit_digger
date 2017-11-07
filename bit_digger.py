@@ -1,16 +1,18 @@
 import os
+import time
 import ccxt
 import bit_digger_db
 from bit_digger_db import Order
 from bit_digger_db import Trade
+
 
 # BIT_DIGGER_EXCHANGE must be one of the strings
 # returned from ccxt.exchanges
 exchange_string = os.environ['BIT_DIGGER_EXCHANGE']
 # Currently supported resources are:
 #   orders
+#   trades
 #
-#   Note: trades supported soon
 resource = os.environ['BIT_DIGGER_RESOURCE']
 
 def store_resource(resource):
@@ -26,8 +28,16 @@ class BaseDigger(object):
         else:
             raise NotImplementedError(self.exchange_string + " is not an exchange supported by ccxt")
 
+    def get_resources(self, market):
+        raise NotImplementedError("BaseDigger class is not meant to be used and get_resources should be overriden in all subclasses.")
+
     def dig(self):
-        raise NotImplementedError("BaseDigger class is not meant to be used and dig() should be overriden in all subclasses.")
+        for market in self.exchange.markets:
+            for resource in self.get_resources(market):
+                store_resource(resource)
+            time.sleep (self.exchange.rateLimit / 1000) #time.sleep wants seconds
+            
+        
 
 
 class OrderDigger(BaseDigger):
@@ -35,7 +45,8 @@ class OrderDigger(BaseDigger):
         return self.exchange.fetch_order_book(market)
 
 
-    def get_orders(self, market):
+    def get_resources(self, market):
+        print "Digging for trades from %s" % market
         orders = []
         book = self.get_order_book(market)
         timestamp = book['timestamp']
@@ -56,20 +67,30 @@ class OrderDigger(BaseDigger):
                                 market,
                                 timestamp,
                                 datetime))
+        print "Dug up %i orders for %s" % (len(orders), market)
         return orders
 
-    def dig(self):
-        print "mining orders"
-        for market in self.exchange.markets:
-            print "mining orders from " + market
-            for order in self.get_orders(market):
-                store_resource(order)
+class TradeDigger(BaseDigger):
+    def get_resources(self, market):
+        print "Digging for trades from %s" % market
+        trade_models = []
+        for trade in self.exchange.fetch_trades(market):
+            trade_models.append(Trade(trade['price'],
+                                     trade['amount'],
+                                     trade['type'],
+                                     trade['side'],
+                                     self.exchange_string,
+                                     market,
+                                     trade['timestamp'],
+                                     trade['datetime']))
+        print "Dug up %i trades for %s" % (len(trade_models), market)
+        return trade_models                
 
-#class TradeDigger(BaseDigger):
-    
+
+
 diggers = {}
 diggers['orders'] = OrderDigger
-#minder['trades'] = TradeDigger
+diggers['trades'] = TradeDigger
 
 
 class BitDigger(BaseDigger):
@@ -80,23 +101,11 @@ class BitDigger(BaseDigger):
         
 
     def dig(self):
-        print "digging for " + self.resource
+        print "Digging for " + self.resource
         if self.resource in diggers.keys(): # if the resource is supported
-            miners[resource](self.exchange_string).dig() # execute miner function
+            diggers[resource](self.exchange_string).dig() # execute miner function
         else:
-            raise NotImplementedError(self._resource + " is not a supported resource.")
-
-
-
-
-# def get_trades(market):
-#     trades = []
-#     for trade in exhcnage.fetch_trades(market):
-#         our_trade = 
-
-
-# def mine_trades():
-#     print 'TODO'
+            raise NotImplementedError(self.resource + " is not a supported resource.")
     
 
 digger = BitDigger(resource, exchange_string)

@@ -83,7 +83,7 @@ class Trade(OrderAndTradeBase, Base):
     def __init__(self, price, amount, limit, buy, exchange, market, timestamp, datetime):
         super(Trade, self).__init__(price,
                                     amount,
-                                    bid_or_ask == 'limit', # order type is 'limit' if true, 'market' if false
+                                    limit == 'limit', # order type is 'limit' if true, 'market' if false
                                     exchange,
                                     market,
                                     timestamp,
